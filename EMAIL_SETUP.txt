@@ -1,0 +1,32 @@
+إعداد البريد — النسخة 8
+
+تم تعديل مستلم Contact Us وRequest Quote إلى contact@eicportal.com.
+الإرسال عبر Cloudflare Worker وResend؛ لا يفتح تطبيق البريد لإرسال الرسالة يدوياً.
+
+مهم قبل النشر:
+1. تأكد أن صندوق contact@eicportal.com موجود فعلاً لدى مزود بريدك ويمكنه استقبال الرسائل. امتلاك الدومين وحده لا ينشئ صندوق بريد.
+2. افتح Resend > Domains > Add Domain، وأضف eicportal.com.
+3. انسخ سجلات DNS التي يعطيك إياها Resend إلى قسم DNS للدومين في Cloudflare أو لدى مزود DNS الحالي. انسخ الأسماء والقيم كما يعرضها Resend؛ لا تستبدل سجلات البريد الحالية عشوائياً.
+4. ارجع إلى Resend واضغط Verify وانتظر حتى تظهر الحالة Verified.
+5. يجب أن يكون EMAIL_FROM في Worker هو contact@eicportal.com أو عنواناً من الدومين الموثق. عنوان onboarding@resend.dev التجريبي لا يسمح بالإرسال لهذا المستلم الجديد إلا إن كان هو بريد حساب Resend نفسه.
+
+إذا كان Worker القديم ما زال موجوداً:
+مفتاح RESEND_API_KEY السابق يمكن استخدامه إذا بقي صالحاً ويملك صلاحية الإرسال للدومين الجديد. لا تحتاج إنشاء حساب Resend جديد. افتح cmd داخل مجلد الموقع بعد فك ZIP، ثم شغل:
+npx wrangler login
+npx wrangler secret put EMAIL_FROM --name eicportal1
+عندما يطلب القيمة، اكتب contact@eicportal.com ثم Enter.
+npx wrangler deploy
+
+إذا حذفت Worker القديم أو مفتاحه غير موجود:
+شغل SETUP_EMAIL.cmd من المجلد بعد فك الضغط. يتطلب Node.js LTS.
+سيطلب تسجيل دخول Cloudflare، ثم مفتاح Resend، ثم EMAIL_FROM. أدخل contact@eicportal.com كعنوان مرسل.
+لا تضع مفتاح API في config.js أو GitHub أو هذه المحادثة.
+
+اسم Worker في wrangler.jsonc هو eicportal1. إذا كان مشروعك الحالي باسم مختلف، عدل الاسم والأوامر ليطابقه قبل النشر، أو أضف RESEND_API_KEY وEMAIL_FROM من إعدادات مشروعك الحالي في Cloudflare ثم انشر worker.mjs مع الملفات.
+رفع HTML وحدها لا يشغل /api/contact.
+
+بعد النشر:
+افتح الموقع، حدث الصفحة Ctrl+F5، واختبر Contact Us وRequest Quote.
+تحتوي الرسالة على الاسم والبريد والخدمة إن وجدت وتفاصيل الطلب. الرد على الرسالة يتجه لبريد العميل.
+رسالة النجاح تظهر بعد قبول Resend الطلب وإرجاع معرف الرسالة. هذا لا يثبت وصولها لصندوق الوارد؛ تحقق من Resend > Emails وحالة Delivered ومن صندوق contact@eicportal.com والسبام.
+لم يتم اختبار تسليم بريد فعلي أو تغيير إعدادات حساباتك من هنا.

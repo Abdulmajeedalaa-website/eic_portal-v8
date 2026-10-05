@@ -1,0 +1,14 @@
+worker.mjs
+wrangler.jsonc
+README.txt
+EMAIL_SETUP.txt
+.assetsignore
+node_modules
+.wrangler
+.dev.vars
+.env
+*.zip
+
+SETUP_EMAIL.cmd
+
+HUB_GUIDE.txt
